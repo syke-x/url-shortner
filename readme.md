@@ -18,15 +18,13 @@ Endpoints related to user management and authentication.
 | `PUT` | `/users/{id}` | Updates an existing user's information. | Yes |
 | `DELETE` | `/users/{id}` | Deletes a user. | Yes |
 
-### User Endpoint Details
+## URL
+Endpoints related to URL management and authentication 
 
-**`GET /users/{id}`**
-* **Path Parameters:**
-  * `id` (integer): The unique identifier of the user.
-* **Response (200 OK):**
-  ```json
-  {
-    "id": 1,
-    "name": "Jane Doe",
-    "email": "jane@example.com"
-  }
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :---: |
+| `GET` | `/urls` | Retrieves a list of all urls. | Yes |
+| `GET` | `/users/{user_id}/urls` | Retrieves URLs of a specific user. | Yes |
+| `POST` | `/users/{user_id}/url` | Creates a new url | No |
+| `DELETE` | `/users/{user_id}/{id}` | Deletes a url. | Yes |
+
