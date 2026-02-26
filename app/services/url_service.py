@@ -1,36 +1,60 @@
 from app import db 
 import logging
+from sqlalchemy.exc import SQLAlchemyError
 from app.models.models import URL
 from app.utils.utils import generate_short_code , is_valid_url
 from app.utils.response import success_response , error_response
 from datetime import datetime , timedelta
 
+logger = logging.getLogger(__name__)
+
 def create_short_url(long_url, ttl_seconds):
-    logger = logging.getLogger(__name__)
-    logger.info(f"Attempting to create short URL for long URL: {long_url}")
+    
+    logger.info(f"Attempting to create short URL for long URL")
 
     try : 
-        logger.debug("Generating short code")
-        short_code = generate_short_code()
+        max_attempts = 5
+        attempt = 0
 
-        while URL.query.filter_by(short_code=short_code).first():
-            short_code = generate_short_code() # generate until we get a unique code
+        while attempt < max_attempts:
+
+            logger.debug("Generating short code")
+            short_code = generate_short_code()
+
+            exists = URL.query.filter_by(short_code=short_code).first()
+            if not exists:
+                break 
+            
+            attempt += 1 
+            logger.warning(f"collision detected for short_code:{short_code} , retrying...")
+            
+
+        if attempt == max_attempts:
+            logger.error("Max attempt reached for generating unique short code")
+            return error_response("Failed to generate a unique short code", 500)
         
         new_url = URL(
             long_url = long_url,
             short_code = short_code,
-            count = 0,
-            expired_at = datetime.utcnow() + timedelta(seconds=ttl_seconds) 
+            count= 0,
+            expired_at = datetime.utcnow() + timedelta(seconds=ttl_seconds)
         )
 
         db.session.add(new_url)
         db.session.commit()
 
+        logger.info(f"Short URL created successfully with short_code:{short_code}")
         return success_response(data={"short_code": short_code}, message="Short URL created successfully", status_code=201)
+        
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.error(f"Database error while creating short URL: " , exc_info=True)
+        return error_response("Database error occurred", 500)
     
     except Exception as e:
-        logger.error(f"Error creating short URL: {str(e)}")
-        return error_response("An error occurred while creating the short URL", 500)
+        db.session.rollback()
+        logger.critical(f"Unexpected error while creating short URL: " , exc_info=True)
+        return error_response("An unexpected server error occurred", 500)
 
     
 
