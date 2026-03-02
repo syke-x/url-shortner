@@ -13,12 +13,21 @@ def login():
     username = data.get('username')
     password = data.get('password')
 
-    if User.query.filter_by(username=username,password=password).first():
-        access_token = create_access_token(identity=username)
-        return jsonify(access_token=access_token), 200 
-    
-    return jsonify({"msg": "Bad username or password"}), 401
+    user =  User.query.filter_by(username=username).first()
 
+    if not user or not verify_password(user.hashed_password, password):
+        return error_response("Invalid username or password", 401)
+
+    access_token = create_access_token(
+        identity=user.user_id,
+        additional_claims= {
+            "role" : user.role 
+        }
+
+    )
+
+    return success_response(data={"access_token": access_token}, message="Login successful", status_code=200)
+                            
 @auth_bp.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
