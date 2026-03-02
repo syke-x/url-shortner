@@ -26,9 +26,11 @@ def create_app():
     from app.routes.user_routes import user_bp 
     from app.routes.auth_routes import auth_bp
     from app.services.scheduler import start_scheduler
+    from app.utils.jwt_callbacks import register_jwt_callbacks
     
     app.register_blueprint(user_bp)
     app.register_blueprint(auth_bp)
+    register_jwt_callbacks(jwt)
     
     setup_logging()
     start_scheduler(app)

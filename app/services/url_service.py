@@ -8,7 +8,7 @@ from datetime import datetime , timedelta
 
 logger = logging.getLogger(__name__)
 
-def create_short_url(long_url, ttl_seconds):
+def create_short_url(long_url, ttl_seconds,user_id):
     
     logger.info(f"Attempting to create short URL for long URL")
 
@@ -34,10 +34,11 @@ def create_short_url(long_url, ttl_seconds):
             return error_response("Failed to generate a unique short code", 500)
         
         new_url = URL(
+            user_id = user_id,
             long_url = long_url,
             short_code = short_code,
             count= 0,
-            expired_at = datetime.utcnow() + timedelta(seconds=ttl_seconds)
+            expired_at = datetime.utcnow() + timedelta(seconds=86400)
         )
 
         db.session.add(new_url)
@@ -59,7 +60,7 @@ def create_short_url(long_url, ttl_seconds):
     
 
 
-def create_custom_short_url(long_url , custom_short_code , ttl_seconds):
+def create_custom_short_url(long_url , custom_short_code , ttl_seconds,user_id):
 
     logger.info(f"Attempting to create short URL for long URL")
 
@@ -72,10 +73,11 @@ def create_custom_short_url(long_url , custom_short_code , ttl_seconds):
             return error_response("Custom short code already exists", 400)
         
         new_url = URL(
+            user_id = user_id,
             long_url = long_url,
             short_code = custom_short_code,
             count= 0,
-            expired_at = datetime.utcnow() + timedelta(seconds=ttl_seconds)
+            expired_at = datetime.utcnow() + timedelta(seconds=86400)
         )
 
         db.session.add(new_url)
@@ -87,6 +89,7 @@ def create_custom_short_url(long_url , custom_short_code , ttl_seconds):
         db.session.rollback()
         logger.error(f"Database error while creating custom short URL: {e}")
         return error_response("Database error occurred", 500)
+    
     except Exception as e:
         db.session.rollback()
         logger.critical(f"Unexpected error while creating short URL: " , exc_info=True)

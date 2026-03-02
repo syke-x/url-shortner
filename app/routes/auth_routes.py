@@ -19,7 +19,7 @@ def login():
         return error_response("Invalid username or password", 401)
 
     access_token = create_access_token(
-        identity=user.user_id,
+        identity=str(user.user_id),
         additional_claims= {
             "role" : user.role 
         }
@@ -33,6 +33,7 @@ def register():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
+    role = data.get('role')
 
     if not username or not password:
         return error_response("Username and password are required", 400)
@@ -42,7 +43,7 @@ def register():
     if User.query.filter_by(username=username).first():
         return jsonify({"msg": "Username already exists"}), 400
 
-    new_user = User(username=username, password=hashed_password)
+    new_user = User(username=username, hashed_password=hashed_password , role=role)
     db.session.add(new_user)
     db.session.commit()
 

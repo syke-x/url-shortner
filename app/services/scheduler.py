@@ -16,5 +16,5 @@ def start_scheduler(app):
             print(f"Deleted expired URLs at {now}")
             db.session.commit()
             print("Scheduler job executed successfully")
-    scheduler.add_job(job, trigger="interval", seconds=60)
+    scheduler.add_job(job, trigger="interval", seconds=86400)
     scheduler.start()
