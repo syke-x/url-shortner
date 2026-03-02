@@ -9,14 +9,21 @@ payload = {
     "long_url": "https://example.com"
 }
 
+headers = {
+    "Authorization" : "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc3MjQ0NjQ2NCwianRpIjoiYTU1MTVkNDItYTgzYi00NjAzLWE2MmItZGVjOWY3ZDgxZDZhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjMiLCJuYmYiOjE3NzI0NDY0NjQsImNzcmYiOiI5ZjIyYTE0ZS1jYjMxLTQ5MmQtODAxNC1mYzljMzM1ZjYwZmEiLCJleHAiOjE3NzI0NDgyNjQsInJvbGUiOiJ1c2VyIn0.d6cuIhdaQNer5Oxhk_ISDWlFtSFEWDxGRKklIybqyHk",
+    "Content-Type": "application/json"
+}
+
 TOTAL_REQUESTS = 2000
 CONCURRENT_WORKERS = 50
 
 
 def send_request():
     start = time.time()
-    response = requests.post(URL, json=payload)
+    response = requests.post(URL, json=payload , headers=headers)
     end = time.time()
+
+    print(response.text)
 
     return {
         "status": response.status_code,
