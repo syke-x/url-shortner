@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify 
 from flask_jwt_extended import get_jwt_identity, jwt_required , current_user
 from app.models.models import URL 
+from app.rate_limiter.decorators import rate_limit
 from app.services.url_service import create_short_url , create_custom_short_url
 from app.utils.auth import role_required
 from app.utils.response import success_response , error_response
@@ -12,7 +13,8 @@ user_bp = Blueprint("main" , __name__)
 
 @user_bp.route("/api/users", methods=["GET"])
 @jwt_required()
-@role_required("user" )
+@role_required("user")
+@rate_limit(limit=5, window=60)
 def get_users():
     all_urls = URL.query.filter_by(user_id=current_user.user_id).all()
     return jsonify([{

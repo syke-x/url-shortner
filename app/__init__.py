@@ -16,7 +16,7 @@ def create_app():
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config["JWT_SECRET_KEY"] = "super-secret-key-change-me" 
+    app.config["JWT_SECRET_KEY"] = "a_very_long_random_secret_key_for_jwt_security_12345"
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
 
     CORS(app)
