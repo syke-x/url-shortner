@@ -14,7 +14,7 @@ user_bp = Blueprint("main" , __name__)
 @user_bp.route("/api/users", methods=["GET"])
 @jwt_required()
 @role_required("user")
-@rate_limit(limit=5, window=60)
+@rate_limit(limit=100, window=60)
 def get_users():
     all_urls = URL.query.filter_by(user_id=current_user.user_id).all()
     return jsonify([{

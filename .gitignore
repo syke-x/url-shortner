@@ -1,7 +1,7 @@
 /logs
 /venv
 /instance
-
+dump.rdb
 # Python cache files
 __pycache__/
 *.pyc

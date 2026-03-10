@@ -2,3 +2,6 @@ flask
 flask-jwt-extended
 redis
 flask_sqlalchemy
+flask_cors
+apscheduler
+requests
